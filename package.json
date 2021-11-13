@@ -1,0 +1,21 @@
+{
+  "name": "lagou-shop-mobile",
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "serve": "vite preview"
+  },
+  "dependencies": {
+    "vant": "^3.2.8",
+    "vue": "^3.2.16",
+    "vue-router": "^4.0.12",
+    "vuex": "^4.0.2"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^1.9.3",
+    "@vue/compiler-sfc": "^3.2.21",
+    "sass": "^1.43.4",
+    "vite": "^2.6.4"
+  }
+}
