@@ -2,7 +2,7 @@
   "name": "lagou-shop-mobile",
   "version": "0.0.0",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --host",
     "build": "vite build",
     "serve": "vite preview --host",
     "lint": "eslint ./src/**/*.{js,vue,ts} --fix"

@@ -39,5 +39,6 @@
 // 增加 fixed 样式的权重
 .van-tabbar {
   position: fixed !important;
+  bottom: 0 !important;
 }
 </style>

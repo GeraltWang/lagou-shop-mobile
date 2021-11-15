@@ -14,6 +14,9 @@ import TabBar from '@/components/TabBar.vue';
 </script>
 
 <style lang="scss" scoped>
+.home-nav {
+  z-index: 10;
+}
 .home-main {
   background-color: #f7f7f7;
   padding: 50px 0;

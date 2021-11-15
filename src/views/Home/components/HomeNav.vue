@@ -31,13 +31,16 @@
     padding: 0 10px;
   }
   .search {
+    position: relative;
     background-color: #f7f7f7;
     width: 100%;
     height: 30px;
     margin-right: 10px;
     border-radius: 25px;
     .van-icon {
-      margin-left: 10px;
+      position: absolute;
+      left: 10px;
+      top: calc(50% - 9.375px);
     }
   }
 }
