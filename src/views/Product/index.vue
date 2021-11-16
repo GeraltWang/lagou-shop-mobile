@@ -1,31 +1,15 @@
 <template>
-  <van-nav-bar
-    fixed
-    left-arrow
-  />
-  <van-tabs
-    scrollspy
-    color="#fbc546"
-  >
+  <van-nav-bar fixed left-arrow />
+  <van-tabs scrollspy color="#fbc546">
     <van-tab title="商品">
       <!-- 轮播图 -->
       <van-swipe indicator-color="#ccc">
-        <van-swipe-item
-          v-for="(item, index) in swipeImage"
-          :key="index"
-        >
-          <van-image
-            width="10rem"
-            height="10rem"
-            :src="item"
-          />
+        <van-swipe-item v-for="(item, index) in swipeImage" :key="index">
+          <van-image width="10rem" height="10rem" :src="item" />
         </van-swipe-item>
       </van-swipe>
       <!-- 商品信息 -->
-      <van-cell
-        class="product-info"
-        :border="false"
-      >
+      <van-cell class="product-info" :border="false">
         <!-- 使用 title, label 插槽来自定义 -->
         <template #title>
           <!-- 价格 -->
@@ -33,14 +17,9 @@
             <span>￥{{ storeInfo?.price }}</span>
           </div>
           <!-- 分享按钮 -->
-          <van-icon
-            name="share-o"
-            size="20"
-            class="share"
-          />
+          <van-icon name="share-o" size="20" class="share" />
           <!-- 商品标题 -->
-          <div class="title" v-text="storeInfo?.store_name">
-          </div>
+          <div class="title" v-text="storeInfo?.store_name"></div>
         </template>
         <!-- 其他信息 -->
         <template #label>
@@ -57,14 +36,15 @@
       </van-cell>
     </van-tab>
     <van-tab title="评价">
-      内容 2
+      <van-cell-group class="comment">
+        <!-- 评价状况 -->
+        <van-cell is-link :title="replyCountShow" :value="replyRate" to="/"></van-cell>
+        <!-- 评价列表 -->
+        <comment-item v-if="replyCount != 0" :reply="reply"></comment-item>
+      </van-cell-group>
     </van-tab>
-    <van-tab title="推荐">
-      内容 3
-    </van-tab>
-    <van-tab title="详情">
-      内容 4
-    </van-tab>
+    <van-tab title="推荐">内容 3</van-tab>
+    <van-tab title="详情">内容 4</van-tab>
   </van-tabs>
 </template>
 
@@ -73,6 +53,7 @@ import { computed, ref } from '@vue/reactivity';
 import { Toast } from 'vant';
 import { useRouter } from 'vue-router';
 import { getProductDetail } from '@/api/product.js';
+import CommentItem from '@/components/CommentItem.vue';
 
 // defineprops 接收路由参数
 const { productId } = defineProps({
@@ -104,6 +85,16 @@ initProductDetail();
 const storeInfo = computed(() => productDetail.value.storeInfo);
 // 1 轮播图
 const swipeImage = computed(() => storeInfo.value?.slider_image);
+// 2 评价信息
+// 评价个数
+const replyCount = computed(() => productDetail.value.replyCount || 0);
+const replyCountShow = computed(() => `用户评价(${replyCount.value})`);
+// 好评率
+const replyChance = computed(() => productDetail.value.replyChance || 100);
+const replyRate = computed(() => `${replyChance.value}% 好评率`);
+// 好评信息
+const reply = computed(() => productDetail.value.reply);
+const productLv = ref(3.5);
 </script>
 
 <style lang="scss" scoped>
@@ -158,6 +149,10 @@ const swipeImage = computed(() => storeInfo.value?.slider_image);
   }
   // sku 信息
   .product-sku {
+    margin-bottom: 10px;
+  }
+  // 商品评价
+  .comment {
     margin-bottom: 10px;
   }
 }
