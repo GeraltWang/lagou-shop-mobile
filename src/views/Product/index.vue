@@ -43,7 +43,23 @@
         <comment-item v-if="replyCount != 0" :reply="reply"></comment-item>
       </van-cell-group>
     </van-tab>
-    <van-tab title="推荐">内容 3</van-tab>
+    <van-tab title="推荐">
+      <van-cell class="recommend">
+        <p class="title">推荐商品</p>
+        <van-grid :column-num="3" :border="false">
+          <van-grid-item
+            v-for="item in goodsList"
+            v-show="item.id != productId"
+            :key="item.id"
+            :to="{ name: 'product', params: { productId: item.id } }"
+          >
+            <van-image width="2.6rem" height="2.6rem" :src="item.image"></van-image>
+            <p v-text="item.store_name"></p>
+            <span>￥{{ item.price }}</span>
+          </van-grid-item>
+        </van-grid>
+      </van-cell>
+    </van-tab>
     <van-tab title="详情">内容 4</van-tab>
   </van-tabs>
 </template>
@@ -51,7 +67,7 @@
 <script setup>
 import { computed, ref } from '@vue/reactivity';
 import { Toast } from 'vant';
-import { useRouter } from 'vue-router';
+import { useRouter, onBeforeRouteUpdate} from 'vue-router';
 import { getProductDetail } from '@/api/product.js';
 import CommentItem from '@/components/CommentItem.vue';
 
@@ -65,10 +81,20 @@ const { productId } = defineProps({
 
 // vueRouter 功能
 const router = useRouter();
+// 跳转推荐商品 通过导航守卫监听路由变化 请求新的商品数据
+onBeforeRouteUpdate((to) => {
+  // 清除旧数据
+  productDetail.value = {};
+  // 回到顶部
+  document.body.scrollTop = 0;
+  document.documentElement.scrollTop = 0;
+  // 重新请求数据
+  initProductDetail(to.params.productId);
+})
 
 // 请求商品详情
 const productDetail = ref({});
-const initProductDetail = async () => {
+const initProductDetail = async (productId) => {
   const { data } = await getProductDetail(productId);
   console.log(data);
   if (data.status !== 200) {
@@ -78,7 +104,7 @@ const initProductDetail = async () => {
   }
   productDetail.value = data.data;
 };
-initProductDetail();
+initProductDetail(productId);
 
 // ---商品数据处理---
 // 商品详细信息
@@ -94,7 +120,8 @@ const replyChance = computed(() => productDetail.value.replyChance || 100);
 const replyRate = computed(() => `${replyChance.value}% 好评率`);
 // 好评信息
 const reply = computed(() => productDetail.value.reply);
-const productLv = ref(3.5);
+// 3 推荐
+const goodsList = computed(() => productDetail.value.good_list);
 </script>
 
 <style lang="scss" scoped>
@@ -154,6 +181,31 @@ const productLv = ref(3.5);
   // 商品评价
   .comment {
     margin-bottom: 10px;
+  }
+  // 推荐
+  :deep(.recommend) {
+    margin-bottom: 10px;
+    .title {
+      font-size: 16px;
+      font-weight: 700;
+      padding: 5px 0;
+    }
+    .van-grid-item {
+      p {
+        font-size: 13px;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        -webkit-line-clamp: 2;
+        align-self: flex-start;
+      }
+      span {
+        color: #f2270c;
+        font-size: 14px;
+        font-weight: 700;
+        align-self: flex-start;
+      }
+    }
   }
 }
 // 轮播图
