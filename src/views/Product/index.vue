@@ -30,7 +30,7 @@
         <template #title>
           <!-- 价格 -->
           <div class="price">
-            <span>￥3699.01</span>
+            <span>￥{{ storeInfo?.price }}</span>
           </div>
           <!-- 分享按钮 -->
           <van-icon
@@ -39,15 +39,20 @@
             class="share"
           />
           <!-- 商品标题 -->
-          <div class="title">
-            1111111111111111111
+          <div class="title" v-text="storeInfo?.store_name">
           </div>
         </template>
         <!-- 其他信息 -->
         <template #label>
-          <span>原价：123</span>
-          <span>库存：456</span>
-          <span>销量：77777</span>
+          <span>原价：{{ storeInfo?.ot_price }}</span>
+          <span>库存：{{ storeInfo?.stock }}</span>
+          <span>销量：{{ storeInfo?.fsales }}</span>
+        </template>
+      </van-cell>
+      <!-- 商品规格选择 -->
+      <van-cell class="product-sku" is-link>
+        <template #title>
+          <span>已选择：</span>
         </template>
       </van-cell>
     </van-tab>
@@ -150,6 +155,10 @@ const swipeImage = computed(() => storeInfo.value?.slider_image);
       display: flex;
       justify-content: space-between;
     }
+  }
+  // sku 信息
+  .product-sku {
+    margin-bottom: 10px;
   }
 }
 // 轮播图
