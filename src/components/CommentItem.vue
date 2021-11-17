@@ -4,8 +4,11 @@
     <div class="user-info">
       <img
         :src="reply?.avatar"
+      >
+      <span
+        class="nickname"
+        v-text="reply?.nickname"
       />
-      <span class="nickname" v-text="reply?.nickname"></span>
       <van-rate
         v-model="star"
         :size="15"
@@ -17,15 +20,23 @@
       />
     </div>
     <!-- 商品信息 -->
-    <p class="time">{{ reply?.add_time }} {{ reply?.sku }}</p>
+    <p class="time">
+      {{ reply?.add_time }} {{ reply?.sku }}
+    </p>
     <!-- 评价内容 -->
-    <p class="comment-content" v-text="reply?.comment"></p>
+    <p
+      class="comment-content"
+      v-text="reply?.comment"
+    />
     <!-- 图片列表 -->
     <ul class="picture">
-      <li v-for="(item, index) in pics" :key="index">
+      <li
+        v-for="(item, index) in pics"
+        :key="index"
+      >
         <img
           :src="item"
-        />
+        >
       </li>
     </ul>
     <!-- 评价图片 -->
@@ -38,9 +49,9 @@ import { computed } from '@vue/reactivity';
 const { reply } = defineProps({
   reply: {
     type: Object,
-    required: true
-  }
-})
+    required: true,
+  },
+});
 
 // ---处理数据---
 // 评价星级

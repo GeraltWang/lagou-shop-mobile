@@ -10,7 +10,10 @@
       />
     </div>
     <!-- 分类跳转 -->
-    <van-icon name="wap-nav" />
+    <van-icon
+      name="wap-nav"
+      size="0.8rem"
+    />
   </div>
 </template>
 <script setup>

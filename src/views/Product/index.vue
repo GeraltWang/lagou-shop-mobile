@@ -1,15 +1,32 @@
 <template>
-  <van-nav-bar fixed left-arrow />
-  <van-tabs scrollspy color="#fbc546">
+  <van-nav-bar
+    fixed
+    left-arrow
+    @click-left="router.go(-1)"
+  />
+  <van-tabs
+    scrollspy
+    color="#fbc546"
+  >
     <van-tab title="商品">
       <!-- 轮播图 -->
       <van-swipe indicator-color="#ccc">
-        <van-swipe-item v-for="(item, index) in swipeImage" :key="index">
-          <van-image width="10rem" height="10rem" :src="item" />
+        <van-swipe-item
+          v-for="(item, index) in swipeImage"
+          :key="index"
+        >
+          <van-image
+            width="10rem"
+            height="10rem"
+            :src="item"
+          />
         </van-swipe-item>
       </van-swipe>
       <!-- 商品信息 -->
-      <van-cell class="product-info" :border="false">
+      <van-cell
+        class="product-info"
+        :border="false"
+      >
         <!-- 使用 title, label 插槽来自定义 -->
         <template #title>
           <!-- 价格 -->
@@ -17,9 +34,16 @@
             <span>￥{{ storeInfo?.price }}</span>
           </div>
           <!-- 分享按钮 -->
-          <van-icon name="share-o" size="20" class="share" />
+          <van-icon
+            name="share-o"
+            size="20"
+            class="share"
+          />
           <!-- 商品标题 -->
-          <div class="title" v-text="storeInfo?.store_name"></div>
+          <div
+            class="title"
+            v-text="storeInfo?.store_name"
+          />
         </template>
         <!-- 其他信息 -->
         <template #label>
@@ -29,45 +53,126 @@
         </template>
       </van-cell>
       <!-- 商品规格选择 -->
-      <van-cell class="product-sku" is-link>
+      <van-cell
+        class="product-sku"
+        is-link
+        @click="showPopup"
+      >
         <template #title>
-          <span>已选择：</span>
+          <span>已选择：{{ sku }}</span>
         </template>
       </van-cell>
+      <!-- 规格选择弹出层 -->
+      <van-popup
+        v-model:show="skuState.show"
+        round
+        position="bottom"
+      >
+        <van-cell-group :border="false">
+          <!-- 商品信息 -->
+          <van-cell class="popup-header">
+            <!-- 图片 -->
+            <van-image
+              width="2rem"
+              height="2rem"
+              :src="skuDetail?.image"
+            />
+            <!-- 文字 -->
+            <div class="info">
+              <p
+                class="title"
+                v-text="storeInfo?.store_name"
+              />
+              <p class="price">
+                ￥{{ skuDetail?.price }}
+              </p>
+              <p class="stock">
+                库存：{{ skuDetail?.stock }}
+              </p>
+            </div>
+          </van-cell>
+          <!-- 规格 -->
+          <van-cell
+            class="spec"
+            v-for="(item, index) in productAttr"
+            :key="item.id"
+          >
+            <p v-text="item.attr_name" />
+            <span
+              class="tag"
+              :class="{ active: skuState.spec[index] === tag }"
+              v-for="tag in item.attr_values"
+              :key="tag"
+              v-text="tag"
+              @click="selectSku(tag, index)"
+            />
+          </van-cell>
+          <!-- 数量 -->
+          <van-cell title="数量">
+            <van-stepper
+              v-model="skuState.quantities"
+              :max="skuDetail?.stock"
+              integer
+            />
+          </van-cell>
+        </van-cell-group>
+      </van-popup>
     </van-tab>
     <van-tab title="评价">
       <van-cell-group class="comment">
         <!-- 评价状况 -->
-        <van-cell is-link :title="replyCountShow" :value="replyRate" to="/"></van-cell>
+        <van-cell
+          is-link
+          :title="replyCountShow"
+          :value="replyRate"
+          :to="{ name: 'comment', params: { productId: storeInfo?.id } }"
+        />
         <!-- 评价列表 -->
-        <comment-item v-if="replyCount != 0" :reply="reply"></comment-item>
+        <comment-item
+          v-if="replyCount != 0"
+          :reply="reply"
+        />
       </van-cell-group>
     </van-tab>
     <van-tab title="推荐">
       <van-cell class="recommend">
-        <p class="title">推荐商品</p>
-        <van-grid :column-num="3" :border="false">
+        <p class="title">
+          推荐商品
+        </p>
+        <van-grid
+          :column-num="3"
+          :border="false"
+        >
           <van-grid-item
             v-for="item in goodsList"
             v-show="item.id != productId"
             :key="item.id"
             :to="{ name: 'product', params: { productId: item.id } }"
           >
-            <van-image width="2.6rem" height="2.6rem" :src="item.image"></van-image>
-            <p v-text="item.store_name"></p>
+            <van-image
+              width="2.6rem"
+              height="2.6rem"
+              :src="item.image"
+            />
+            <p v-text="item.store_name" />
             <span>￥{{ item.price }}</span>
           </van-grid-item>
         </van-grid>
       </van-cell>
     </van-tab>
-    <van-tab title="详情">内容 4</van-tab>
+    <van-tab title="详情">
+      <div
+        class="description"
+        v-html="storeInfo?.description"
+      />
+    </van-tab>
   </van-tabs>
 </template>
 
 <script setup>
-import { computed, ref } from '@vue/reactivity';
+import { computed, ref, reactive } from '@vue/reactivity';
 import { Toast } from 'vant';
-import { useRouter, onBeforeRouteUpdate} from 'vue-router';
+import { useRouter, onBeforeRouteUpdate } from 'vue-router';
 import { getProductDetail } from '@/api/product.js';
 import CommentItem from '@/components/CommentItem.vue';
 
@@ -90,7 +195,7 @@ onBeforeRouteUpdate((to) => {
   document.documentElement.scrollTop = 0;
   // 重新请求数据
   initProductDetail(to.params.productId);
-})
+});
 
 // 请求商品详情
 const productDetail = ref({});
@@ -103,6 +208,8 @@ const initProductDetail = async (productId) => {
     return router.push({ name: 'home' });
   }
   productDetail.value = data.data;
+  // 初始化规格默认选择
+  initSpec(data.data.productAttr);
 };
 initProductDetail(productId);
 
@@ -122,6 +229,33 @@ const replyRate = computed(() => `${replyChance.value}% 好评率`);
 const reply = computed(() => productDetail.value.reply);
 // 3 推荐
 const goodsList = computed(() => productDetail.value.good_list);
+
+// sku弹出层处理
+// 1. 规格数据处理
+const productAttr = computed(() => productDetail.value.productAttr);
+const productValue = computed(() => productDetail.value.productValue);
+const skuState = reactive({
+  show: false,
+  spec: [], // sku选中
+  quantities: 0, // 购买个数
+});
+const value = ref(3);
+// 显示隐藏弹出层
+const showPopup = () => {
+  skuState.show = true;
+};
+// 初始化默认选择sku 默认选中每个选项的第一个
+const initSpec = (spec) => {
+  skuState.spec = spec.map((item) => item.attr_values[0]);
+};
+// sku 切换
+const selectSku = (tag, index) => {
+  skuState.spec[index] = tag;
+};
+// sku 数据处理
+const sku = computed(() => skuState.spec.toString());
+// 根据SKU 获取对应商品信息
+const skuDetail = computed(() => productValue.value?.[sku.value]);
 </script>
 
 <style lang="scss" scoped>
@@ -151,8 +285,9 @@ const goodsList = computed(() => productDetail.value.good_list);
     .van-cell__title {
       .price {
         span {
-          font-size: 22px;
+          font-size: 24px;
           font-weight: 700;
+          color: #f2270c;
         }
       }
       .share {
@@ -177,6 +312,63 @@ const goodsList = computed(() => productDetail.value.good_list);
   // sku 信息
   .product-sku {
     margin-bottom: 10px;
+  }
+  // 规格选择弹出层
+  :deep(.van-popup) {
+    max-height: 65%;
+    .van-cell-group {
+      margin-bottom: 50px;
+      // popup 头部
+      .popup-header {
+        .van-cell__value {
+          display: flex;
+          align-items: center;
+          .van-image {
+            margin-right: 20px;
+          }
+          .info {
+            flex: 1;
+            .title {
+              display: -webkit-box;
+              -webkit-box-orient: vertical;
+              -webkit-line-clamp: 1;
+              overflow: hidden;
+              font-size: 16px;
+              font-weight: 700;
+              margin-bottom: 5px;
+            }
+            .price {
+              color: #f2270c;
+            }
+            .stock {
+              font-size: 12px;
+              color: #999;
+            }
+          }
+        }
+      }
+      // 规格
+      .spec {
+        p {
+          margin-bottom: 5px;
+        }
+        .tag {
+          display: inline-block;
+          min-width: 25px;
+          padding: 0 12px;
+          border: 1px solid #ccc;
+          border-radius: 12px;
+          text-align: center;
+          background-color: #f2f2f2;
+          margin-right: 10px;
+        }
+        .tag.active {
+          color: #f2270c;
+          border-color: #f2270c;
+          background-color: #fcedeb;
+        }
+      }
+    }
   }
   // 商品评价
   .comment {
@@ -205,6 +397,12 @@ const goodsList = computed(() => productDetail.value.good_list);
         font-weight: 700;
         align-self: flex-start;
       }
+    }
+  }
+  :deep(.description) {
+    width: 100%;
+    img {
+      width: 100%;
     }
   }
 }
