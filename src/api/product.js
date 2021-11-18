@@ -17,13 +17,13 @@ export const getProductDetail = (productId) => request({
 export const getProductReply = (productId) => request({
   method: 'GET',
   url: `/reply/config/${productId}`,
-})
+});
 
 // 根据分类获取评价
 export const getReplyByType = (productId, type) => request({
   method: 'GET',
   url: `/reply/list/${productId}`,
   params: {
-    type: type
-  }
-})
+    type,
+  },
+});

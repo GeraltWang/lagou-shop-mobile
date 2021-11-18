@@ -34,8 +34,8 @@ const routes = [
     name: 'order',
     component: () => import('@/views/Order/index.vue'),
     meta: {
-      requireAuth: true
-    }
+      requireAuth: true,
+    },
   },
   // 订单详情页
   {
@@ -44,8 +44,8 @@ const routes = [
     component: () => import('@/views/OrderDetail/index.vue'),
     props: true,
     meta: {
-      requireAuth: true
-    }
+      requireAuth: true,
+    },
   },
   // 订单确认
   {
@@ -54,8 +54,8 @@ const routes = [
     component: () => import('@/views/OrderConfirm/index.vue'),
     props: true,
     meta: {
-      requireAuth: true
-    }
+      requireAuth: true,
+    },
   },
   // 支付
   {
@@ -64,8 +64,8 @@ const routes = [
     component: () => import('@/views/Pay/index.vue'),
     meta: { requireAuth: true },
     meta: {
-      requireAuth: true
-    }
+      requireAuth: true,
+    },
   },
   // 商品详情
   {
@@ -105,7 +105,7 @@ const routes = [
     path: '/user',
     name: 'user',
     component: () => import('@/views/User/index.vue'),
-    meta: { requireAuth: true },
+    // meta: { requireAuth: true },
   },
   // 404
   {
@@ -122,10 +122,10 @@ const router = createRouter({
 });
 
 // 导航守卫
-router.beforeEach(to => {
+router.beforeEach((to) => {
   // 无需登录的页面可以正常访问
   if (!to.meta.requireAuth) {
-    return true
+    return true;
   }
   // 校验登陆状态
   if (!store.state.user || !window.localStorage.getItem('USERTOKEN')) {
@@ -135,11 +135,10 @@ router.beforeEach(to => {
     return {
       name: 'login',
       query: {
-        redirect: to.fullPath
-      }
-    }
+        redirect: to.fullPath,
+      },
+    };
   }
-
-})
+});
 
 export default router;

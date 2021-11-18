@@ -1,6 +1,6 @@
 <template>
   <van-form @submit="onSubmit">
-    <img :src="state.logo" />
+    <img :src="state.logo">
     <van-cell-group inset>
       <van-field
         v-if="state.isPswd"
@@ -48,7 +48,12 @@
         :rules="[{ required: true, message: '请填写验证码' }]"
       >
         <template #button>
-          <van-button size="small" type="primary" @click="sendCaptcha" :disabled="state.isSent">
+          <van-button
+            size="small"
+            type="primary"
+            @click="sendCaptcha"
+            :disabled="state.isSent"
+          >
             <template #default>
               <span v-if="!state.isSent">发送验证码</span>
               <span v-else>已发送 ({{ state.countDown.seconds }})</span>
@@ -63,39 +68,51 @@
         block
         color="linear-gradient(to right, #5433FF, #20BDFF, #A5FECB)"
         native-type="submit"
-      >登录</van-button>
-      <van-button round block type="primary" plain @click="changeMode">{{ state.changeText }}</van-button>
+      >
+        登录
+      </van-button>
+      <van-button
+        round
+        block
+        type="primary"
+        plain
+        @click="changeMode"
+      >
+        {{ state.changeText }}
+      </van-button>
     </div>
   </van-form>
 </template>
 
 <script setup>
 import { computed, reactive } from '@vue/reactivity';
-import { getVerifyCode, sendVerifyCode, loginByPassword, loginByCaptcha, getLogo } from '@/api/user.js';
 import { useCountDown } from '@vant/use';
 import { Toast } from 'vant';
 import { useStore } from 'vuex';
 import { useRoute, useRouter } from 'vue-router';
+import {
+  getVerifyCode, sendVerifyCode, loginByPassword, loginByCaptcha, getLogo,
+} from '@/api/user.js';
 
 // Vuex Store
-const store = useStore()
+const store = useStore();
 
 // VueRouter
-const router = useRouter()
-const route = useRoute()
+const router = useRouter();
+const route = useRoute();
 
 // ---页面数据---
 const state = reactive({
   loginMode: 'password', // 登录模式 密码 验证码 captcha
   isPswd: computed(() => state.loginMode === 'password'),
-  changeText: computed(() => state.isPswd ? '手机号登录' : '密码登录'),
+  changeText: computed(() => (state.isPswd ? '手机号登录' : '密码登录')),
   username: '',
   password: '',
   captcha: '',
   isSent: false,
   countDown: null,
-  logo: ''
-})
+  logo: '',
+});
 const patternName = /\w+/;
 const patternPhone = /1\d{10}/;
 
@@ -106,10 +123,10 @@ const sendCaptcha = async () => {
     return Toast({
       message: '请输入正确手机号',
       position: 'top',
-    })
+    });
   }
   // 请求验证码 key
-  const { data } = await getVerifyCode()
+  const { data } = await getVerifyCode();
   if (data.status !== 200) {
     return Toast.fail('服务器繁忙，请稍后重试');
   }
@@ -117,8 +134,8 @@ const sendCaptcha = async () => {
   const { data: codeStatus } = await sendVerifyCode({
     type: 'login',
     phone: state.username,
-    key: data.data.key
-  })
+    key: data.data.key,
+  });
   if (codeStatus.status !== 200) {
     return Toast.fail('服务器繁忙，请稍后重试');
   }
@@ -126,63 +143,63 @@ const sendCaptcha = async () => {
   const countDown = useCountDown({
     time: 60 * 1000,
     onFinish() {
-      state.isSent = false
-    }
-  })
+      state.isSent = false;
+    },
+  });
   // 开启倒计时
-  countDown.start()
-  state.isSent = true
-  state.countDown = countDown.current
-}
+  countDown.start();
+  state.isSent = true;
+  state.countDown = countDown.current;
+};
 
 // 切换登陆方式
 const changeMode = () => {
-  state.loginMode = state.isPswd ? 'captcha' : 'password'
-  state.password = ''
-  state.captcha = ''
-}
+  state.loginMode = state.isPswd ? 'captcha' : 'password';
+  state.password = '';
+  state.captcha = '';
+};
 
 // 登录
 // 输入框内容处理
-const formatter = (value) => value.trim()
+const formatter = (value) => value.trim();
 const onSubmit = async () => {
   // 响应结果
-  let data = ''
+  let data = '';
   if (state.isPswd) {
     // 密码登录
     ({ data } = await loginByPassword({
       account: state.username,
-      password: state.password
-    }))
+      password: state.password,
+    }));
   } else {
     ({ data } = await loginByCaptcha({
       phone: state.username,
-      captcha: state.captcha
-    }))
+      captcha: state.captcha,
+    }));
   }
   console.log(data);
   // 登陆失败
   if (state.isPswd && data.status !== 200) {
-    return Toast.fail('账号或密码错误')
+    return Toast.fail('账号或密码错误');
   }
   if (!state.isPswd && data.status !== 200) {
-    return Toast.fail('验证码错误')
+    return Toast.fail('验证码错误');
   }
   // 登陆成功 commit mutation 存储用户信息
-  store.commit('setUser', data.data.token)
+  store.commit('setUser', data.data.token);
   // 跳转页面
-  router.push(route.query.redirect ?? '/user')
-}
+  router.push(route.query.redirect ?? '/user');
+};
 
 const loadLogo = async () => {
-  const { data } = await getLogo()
+  const { data } = await getLogo();
   console.log(data);
   if (data.status !== 200) {
-    return
+    return;
   }
-  state.logo = data.data.logo_url
-}
-loadLogo()
+  state.logo = data.data.logo_url;
+};
+loadLogo();
 </script>
 
 <style lang="scss" scoped>
