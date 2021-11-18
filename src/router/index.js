@@ -1,4 +1,5 @@
 import { createRouter, createWebHashHistory } from 'vue-router';
+import store from '@/store';
 
 // 路由规则设置
 const routes = [
@@ -32,6 +33,9 @@ const routes = [
     path: '/order',
     name: 'order',
     component: () => import('@/views/Order/index.vue'),
+    meta: {
+      requireAuth: true
+    }
   },
   // 订单详情页
   {
@@ -39,6 +43,9 @@ const routes = [
     name: 'order-detail',
     component: () => import('@/views/OrderDetail/index.vue'),
     props: true,
+    meta: {
+      requireAuth: true
+    }
   },
   // 订单确认
   {
@@ -46,6 +53,9 @@ const routes = [
     name: 'order-confirm',
     component: () => import('@/views/OrderConfirm/index.vue'),
     props: true,
+    meta: {
+      requireAuth: true
+    }
   },
   // 支付
   {
@@ -53,6 +63,9 @@ const routes = [
     name: 'pay',
     component: () => import('@/views/Pay/index.vue'),
     meta: { requireAuth: true },
+    meta: {
+      requireAuth: true
+    }
   },
   // 商品详情
   {
@@ -107,5 +120,26 @@ const router = createRouter({
   history: createWebHashHistory(),
   routes,
 });
+
+// 导航守卫
+router.beforeEach(to => {
+  // 无需登录的页面可以正常访问
+  if (!to.meta.requireAuth) {
+    return true
+  }
+  // 校验登陆状态
+  if (!store.state.user || !window.localStorage.getItem('USERTOKEN')) {
+    // 跳转登录页
+    console.log('请先登录');
+    console.log(to);
+    return {
+      name: 'login',
+      query: {
+        redirect: to.fullPath
+      }
+    }
+  }
+
+})
 
 export default router;

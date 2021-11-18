@@ -12,3 +12,23 @@ export const sendVerifyCode = (data) => request({
   url: '/register/verify',
   data
 })
+
+// 密码登录请求
+export const loginByPassword = (data) => request({
+  method: 'POST',
+  url: '/login',
+  data
+})
+
+// 验证码登录请求
+export const loginByCaptcha = (data) => request({
+  method: 'POST',
+  url: '/login/mobile',
+  data
+})
+
+// logo 图
+export const getLogo = () => request({
+  method: 'GET',
+  url: '/wechat/get_logo'
+})
