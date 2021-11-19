@@ -1,32 +1,15 @@
 <template>
-  <van-nav-bar
-    fixed
-    left-arrow
-    @click-left="router.go(-1)"
-  />
-  <van-tabs
-    scrollspy
-    color="#fbc546"
-  >
+  <van-nav-bar fixed left-arrow @click-left="router.go(-1)" />
+  <van-tabs scrollspy color="#fbc546">
     <van-tab title="商品">
       <!-- 轮播图 -->
       <van-swipe indicator-color="#ccc">
-        <van-swipe-item
-          v-for="(item, index) in swipeImage"
-          :key="index"
-        >
-          <van-image
-            width="10rem"
-            height="10rem"
-            :src="item"
-          />
+        <van-swipe-item v-for="(item, index) in swipeImage" :key="index">
+          <van-image width="10rem" height="10rem" :src="item" />
         </van-swipe-item>
       </van-swipe>
       <!-- 商品信息 -->
-      <van-cell
-        class="product-info"
-        :border="false"
-      >
+      <van-cell class="product-info" :border="false">
         <!-- 使用 title, label 插槽来自定义 -->
         <template #title>
           <!-- 价格 -->
@@ -34,16 +17,9 @@
             <span>￥{{ storeInfo?.price }}</span>
           </div>
           <!-- 分享按钮 -->
-          <van-icon
-            name="share-o"
-            size="20"
-            class="share"
-          />
+          <van-icon name="share-o" size="20" class="share" />
           <!-- 商品标题 -->
-          <div
-            class="title"
-            v-text="storeInfo?.store_name"
-          />
+          <div class="title" v-text="storeInfo?.store_name" />
         </template>
         <!-- 其他信息 -->
         <template #label>
@@ -53,50 +29,27 @@
         </template>
       </van-cell>
       <!-- 商品规格选择 -->
-      <van-cell
-        class="product-sku"
-        is-link
-        @click="showPopup"
-      >
+      <van-cell class="product-sku" is-link @click="showPopup">
         <template #title>
           <span>已选择：{{ sku }}</span>
         </template>
       </van-cell>
       <!-- 规格选择弹出层 -->
-      <van-popup
-        v-model:show="skuState.show"
-        round
-        position="bottom"
-      >
+      <van-popup v-model:show="skuState.show" round position="bottom">
         <van-cell-group :border="false">
           <!-- 商品信息 -->
           <van-cell class="popup-header">
             <!-- 图片 -->
-            <van-image
-              width="2rem"
-              height="2rem"
-              :src="skuDetail?.image"
-            />
+            <van-image width="2rem" height="2rem" :src="skuDetail?.image" />
             <!-- 文字 -->
             <div class="info">
-              <p
-                class="title"
-                v-text="storeInfo?.store_name"
-              />
-              <p class="price">
-                ￥{{ skuDetail?.price }}
-              </p>
-              <p class="stock">
-                库存：{{ skuDetail?.stock }}
-              </p>
+              <p class="title" v-text="storeInfo?.store_name" />
+              <p class="price">￥{{ skuDetail?.price }}</p>
+              <p class="stock">库存：{{ skuDetail?.stock }}</p>
             </div>
           </van-cell>
           <!-- 规格 -->
-          <van-cell
-            class="spec"
-            v-for="(item, index) in productAttr"
-            :key="item.id"
-          >
+          <van-cell class="spec" v-for="(item, index) in productAttr" :key="item.id">
             <p v-text="item.attr_name" />
             <span
               class="tag"
@@ -109,11 +62,7 @@
           </van-cell>
           <!-- 数量 -->
           <van-cell title="数量">
-            <van-stepper
-              v-model="skuState.quantities"
-              :max="skuDetail?.stock"
-              integer
-            />
+            <van-stepper v-model="skuState.quantities" :max="skuDetail?.stock" integer />
           </van-cell>
         </van-cell-group>
       </van-popup>
@@ -128,32 +77,20 @@
           :to="{ name: 'comment', params: { productId: storeInfo?.id } }"
         />
         <!-- 评价列表 -->
-        <comment-item
-          v-if="replyCount != 0"
-          :reply="reply"
-        />
+        <comment-item v-if="replyCount != 0" :reply="reply" />
       </van-cell-group>
     </van-tab>
     <van-tab title="推荐">
       <van-cell class="recommend">
-        <p class="title">
-          推荐商品
-        </p>
-        <van-grid
-          :column-num="3"
-          :border="false"
-        >
+        <p class="title">推荐商品</p>
+        <van-grid :column-num="3" :border="false">
           <van-grid-item
             v-for="item in goodsList"
             v-show="item.id != productId"
             :key="item.id"
             :to="{ name: 'product', params: { productId: item.id } }"
           >
-            <van-image
-              width="2.6rem"
-              height="2.6rem"
-              :src="item.image"
-            />
+            <van-image width="2.6rem" height="2.6rem" :src="item.image" />
             <p v-text="item.store_name" />
             <span>￥{{ item.price }}</span>
           </van-grid-item>
@@ -161,12 +98,17 @@
       </van-cell>
     </van-tab>
     <van-tab title="详情">
-      <div
-        class="description"
-        v-html="storeInfo?.description"
-      />
+      <div class="description" v-html="storeInfo?.description" />
     </van-tab>
   </van-tabs>
+  <!-- 架构栏 -->
+  <van-action-bar>
+    <van-action-bar-icon icon="chat-o" text="客服" color="#ee0a24" />
+    <van-action-bar-icon icon="cart-o" text="购物车" to="/cart" />
+    <van-action-bar-icon icon="star" text="已收藏" color="#ff5000" />
+    <van-action-bar-button type="warning" text="加入购物车" @click="addToCart(0)"/>
+    <van-action-bar-button type="danger" text="立即购买" />
+  </van-action-bar>
 </template>
 
 <script setup>
@@ -174,7 +116,9 @@ import { computed, ref, reactive } from '@vue/reactivity';
 import { Toast } from 'vant';
 import { useRouter, onBeforeRouteUpdate } from 'vue-router';
 import { getProductDetail } from '@/api/product.js';
+import { addCart } from '@/api/cart';
 import CommentItem from '@/components/CommentItem.vue';
+import { useStore } from 'vuex';
 
 // defineprops 接收路由参数
 const { productId } = defineProps({
@@ -186,6 +130,10 @@ const { productId } = defineProps({
 
 // vueRouter 功能
 const router = useRouter();
+
+// Vuex
+const store = useStore();
+
 // 跳转推荐商品 通过导航守卫监听路由变化 请求新的商品数据
 onBeforeRouteUpdate((to) => {
   // 清除旧数据
@@ -239,7 +187,7 @@ const skuState = reactive({
   spec: [], // sku选中
   quantities: 0, // 购买个数
 });
-const value = ref(3);
+
 // 显示隐藏弹出层
 const showPopup = () => {
   skuState.show = true;
@@ -256,6 +204,35 @@ const selectSku = (tag, index) => {
 const sku = computed(() => skuState.spec.toString());
 // 根据SKU 获取对应商品信息
 const skuDetail = computed(() => productValue.value?.[sku.value]);
+
+// ---加购功能---
+const addToCart = async (type) => {
+  // 检测登录, 未登录 跳转登录页
+  if (!store.state.user) {
+    router.push({ name: 'login', query: { redirect: router.currentRoute.value.fullPath } })
+    return Toast({
+      message: '请先登录',
+      position: 'top',
+    })
+  }
+  // 显示弹出层
+  if (!skuState.show) {
+    return skuState.show = true
+  }
+  // 发送请求，将数据加入购物车
+  const { data } = await addCart({
+    new: type,
+    uniqueId: skuDetail.value.unique,
+    productId: productId,
+    cartNum: skuState.quantities,
+  })
+  if (data.status !== 200) {
+    return Toast.fail('服务器异常')
+  }
+  // 隐藏弹出层
+  skuState.show = false
+  Toast.success('加入购物车成功')
+}
 </script>
 
 <style lang="scss" scoped>
@@ -266,6 +243,7 @@ const skuDetail = computed(() => productValue.value?.[sku.value]);
 .van-tabs {
   padding-top: 46px;
   background-color: #f2f2f2;
+  margin-bottom: 50px;
   :deep(.van-tabs__wrap) {
     position: fixed;
     top: 0;
@@ -316,6 +294,7 @@ const skuDetail = computed(() => productValue.value?.[sku.value]);
   // 规格选择弹出层
   :deep(.van-popup) {
     max-height: 65%;
+    z-index: 10;
     .van-cell-group {
       margin-bottom: 50px;
       // popup 头部
@@ -410,5 +389,9 @@ const skuDetail = computed(() => productValue.value?.[sku.value]);
 :deep(.van-swipe) {
   width: 375px;
   height: 375px;
+}
+.van-action-bar {
+  z-index: 10000;
+  width: 100%;
 }
 </style>

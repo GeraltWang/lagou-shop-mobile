@@ -66,6 +66,8 @@
       <van-button
         round
         block
+        loading-type="spinner"
+        :loading="state.isLoginStart"
         color="linear-gradient(to right, #5433FF, #20BDFF, #A5FECB)"
         native-type="submit"
       >
@@ -106,6 +108,7 @@ const state = reactive({
   loginMode: 'password', // 登录模式 密码 验证码 captcha
   isPswd: computed(() => state.loginMode === 'password'),
   changeText: computed(() => (state.isPswd ? '手机号登录' : '密码登录')),
+  isLoginStart: false,
   username: '',
   password: '',
   captcha: '',
@@ -165,6 +168,7 @@ const formatter = (value) => value.trim();
 const onSubmit = async () => {
   // 响应结果
   let data = '';
+  state.isLoginStart = true
   if (state.isPswd) {
     // 密码登录
     ({ data } = await loginByPassword({
@@ -180,13 +184,16 @@ const onSubmit = async () => {
   console.log(data);
   // 登陆失败
   if (state.isPswd && data.status !== 200) {
+    state.isLoginStart = false
     return Toast.fail('账号或密码错误');
   }
   if (!state.isPswd && data.status !== 200) {
+    state.isLoginStart = false
     return Toast.fail('验证码错误');
   }
   // 登陆成功 commit mutation 存储用户信息
   store.commit('setUser', data.data.token);
+  state.isLoginStart = false
   // 跳转页面
   router.push(route.query.redirect ?? '/user');
 };

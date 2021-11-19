@@ -92,7 +92,7 @@ const routes = [
     path: '/cart',
     name: 'cart',
     component: () => import('@/views/Cart/index.vue'),
-    meta: { requireAuth: true },
+    // meta: { requireAuth: true },
   },
   // 搜索
   {
