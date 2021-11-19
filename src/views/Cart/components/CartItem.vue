@@ -9,16 +9,15 @@
           :src="itemInfo.image"
           width="2rem"
           height="2rem"
+          @click.stop="router.push({ name: 'product', params: { productId: itemInfo.productId } })"
         />
         <div class="info">
-          <p class="title" v-text="itemInfo.title"></p>
+          <p class="title" v-text="itemInfo.title" @click.stop="router.push({ name: 'product', params: { productId: itemInfo.productId } })"></p>
           <div class="detail">
             <span class="price">￥{{ itemInfo.price }}</span>
-            <van-stepper v-model="value" integer max="100" button-size="0.65rem" />
+            <van-stepper v-model="value" integer :max="itemInfo.stock" button-size="0.65rem" @click.stop/>
           </div>
-          <!-- <p class="del">
-            <span>删除</span>
-          </p> -->
+          <p class="sku" v-text="itemInfo.sku"></p>
         </div>
       </div>
     </div>
@@ -27,13 +26,16 @@
     </template>
   </van-swipe-cell>
 </template>
-<script setup>
+<script setup>import { useRouter } from 'vue-router';
+
 const { itemInfo } = defineProps({
   itemInfo: {
     type: Object,
     required: true
   }
 })
+
+const router = useRouter()
 </script>
 <style lang="scss" scoped>
 .van-swipe-cell {
@@ -44,7 +46,7 @@ const { itemInfo } = defineProps({
 }
 .cart-item {
   display: flex;
-  min-height: 90px;
+  min-height: 100px;
   padding: 10px 10px;
   .van-checkbox {
     margin: 0 5px;
@@ -58,7 +60,7 @@ const { itemInfo } = defineProps({
       font-size: 14px;
       margin-left: 10px;
       .title {
-        font-size: 18px;
+        font-size: 17px;
         font-weight: 700;
         display: -webkit-box;
         -webkit-box-orient: vertical;
@@ -67,7 +69,7 @@ const { itemInfo } = defineProps({
         margin-bottom: 10px;
       }
       .detail {
-        // margin-bottom: 10px;
+        margin-bottom: 10px;
         .price {
           font-size: 16px;
           color: #f2270c;
@@ -76,8 +78,9 @@ const { itemInfo } = defineProps({
           float: right;
         }
       }
-      .del {
-        direction: rtl;
+      .sku {
+        font-size: 11px;
+        color: #838181;
       }
     }
   }

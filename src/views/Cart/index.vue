@@ -1,6 +1,6 @@
 <template>
   <!-- 顶部导航 -->
-  <van-nav-bar title="购物车" left-text="返回" left-arrow @click-left="router.go(-1)" />
+  <van-nav-bar title="购物车" left-arrow @click-left="router.go(-1)" />
   <!-- 购物车列表 -->
   <div class="cart-list" v-if="hasItem">
     <cart-item v-for="item in cartList" :key="item.id" :item-info="item" />
@@ -57,6 +57,8 @@ const initCart = async (page, limit) => {
       title: item.productInfo.store_name,
       price: item.truePrice,
       stock: item.trueStock,
+      sku: item.productInfo.attrInfo.sku,
+      productId: item.product_id
     })
   });
 }
@@ -75,7 +77,10 @@ const checkedAll = ref(true)
 }
 // 主体
 .cart-list {
-  margin: 47px 0 100px;
+  height: calc(100vh - 50px);
+  margin: 46px 0 100px;
+  padding-top: 10px;
+  box-sizing: border-box;
   background-color: #f2f2f2;
 }
 // 结算
