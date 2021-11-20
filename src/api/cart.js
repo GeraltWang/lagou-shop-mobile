@@ -4,8 +4,8 @@ import request from '@/utils/request.js';
 export const addCart = (data) => request({
   method: 'POST',
   url: '/cart/add',
-  data
-})
+  data,
+});
 
 // 获取购物车数据
 export const getCartList = (page, limit) => request({
@@ -13,13 +13,13 @@ export const getCartList = (page, limit) => request({
   url: '/cart/list',
   params: {
     page,
-    limit
-  }
-})
+    limit,
+  },
+});
 
 // 修改商品个数
-export const changeItemCount = data => request({
+export const changeItemCount = (data) => request({
   method: 'POST',
   url: '/cart/num',
-  data
-})
+  data,
+});

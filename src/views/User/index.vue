@@ -2,45 +2,107 @@
   <div class="container">
     <!-- 头部 -->
     <div class="header">
-      <van-image :src="avatar" width="2rem" height="2rem" round />
-      <div class="user-info" v-if="isLogin">
-        <div class="user-name">{{ userName }}</div>
-        <div class="user-id">ID:{{ userId }}</div>
+      <van-image
+        :src="avatar"
+        width="2rem"
+        height="2rem"
+        round
+      />
+      <div
+        class="user-info"
+        v-if="isLogin"
+      >
+        <div class="user-name">
+          {{ userName }}
+        </div>
+        <div class="user-id">
+          ID:{{ userId }}
+        </div>
       </div>
-      <div class="user-info" v-else>
-        <div class="user-name">未登录</div>
-        <van-button round size="small" @click="goLogin">请先登录</van-button>
+      <div
+        class="user-info"
+        v-else
+      >
+        <div class="user-name">
+          未登录
+        </div>
+        <van-button
+          round
+          size="small"
+          @click="goLogin"
+        >
+          请先登录
+        </van-button>
       </div>
-      <van-icon name="setting-o" size="0.6rem" color />
+      <van-icon
+        name="setting-o"
+        size="0.6rem"
+        color
+      />
     </div>
     <!-- 菜单区域 -->
     <div class="menu">
-      <van-cell-group inset :border="false" class="user-prop">
+      <van-cell-group
+        inset
+        :border="false"
+        class="user-prop"
+      >
         <van-cell>
           <van-grid :border="false">
             <van-grid-item :text="collectCount">
-              <template #icon>收藏</template>
+              <template #icon>
+                收藏
+              </template>
             </van-grid-item>
             <van-grid-item :text="integral">
-              <template #icon>积分</template>
+              <template #icon>
+                积分
+              </template>
             </van-grid-item>
             <van-grid-item :text="couponCount">
-              <template #icon>优惠券</template>
+              <template #icon>
+                优惠券
+              </template>
             </van-grid-item>
             <van-grid-item :text="now_money">
-              <template #icon>余额</template>
+              <template #icon>
+                余额
+              </template>
             </van-grid-item>
           </van-grid>
         </van-cell>
       </van-cell-group>
       <van-cell-group inset>
-        <van-cell title="订单中心" value="查看全部" is-link to="/order" />
-        <van-grid :border="false" column-num="5">
-          <van-grid-item icon="bill-o" text="待付款" />
-          <van-grid-item icon="tosend" text="待发货" />
-          <van-grid-item icon="logistics" text="待收货" />
-          <van-grid-item icon="comment-o" text="待评价" />
-          <van-grid-item icon="sign" text="已完成" />
+        <van-cell
+          title="订单中心"
+          value="查看全部"
+          is-link
+          to="/order"
+        />
+        <van-grid
+          :border="false"
+          column-num="5"
+        >
+          <van-grid-item
+            icon="bill-o"
+            text="待付款"
+          />
+          <van-grid-item
+            icon="tosend"
+            text="待发货"
+          />
+          <van-grid-item
+            icon="logistics"
+            text="待收货"
+          />
+          <van-grid-item
+            icon="comment-o"
+            text="待评价"
+          />
+          <van-grid-item
+            icon="sign"
+            text="已完成"
+          />
         </van-grid>
       </van-cell-group>
     </div>
@@ -51,10 +113,10 @@
 <script setup>
 import { computed, ref } from '@vue/reactivity';
 // import { useStore } from 'vuex';
-import TabBar from '@/components/TabBar.vue';
-import { getUserInfo } from '@/api/user.js';
 import { Toast } from 'vant';
 import { useRouter } from 'vue-router';
+import TabBar from '@/components/TabBar.vue';
+import { getUserInfo } from '@/api/user.js';
 
 // VUEX
 // const store = useStore();
@@ -79,10 +141,10 @@ const initUser = async () => {
   const { data } = await getUserInfo();
   console.log(data);
   if (data.status === 400) {
-    return Toast.fail('服务器异常')
+    return Toast.fail('服务器异常');
   }
   if (data.status === 410000) {
-    isLogin.value = false
+    isLogin.value = false;
     return;
   }
   userData.value = data.data;
@@ -92,8 +154,8 @@ initUser();
 
 // 去登陆
 const goLogin = () => {
-  router.push({ name: 'login', query: { redirect: '/user' } })
-}
+  router.push({ name: 'login', query: { redirect: '/user' } });
+};
 
 </script>
 

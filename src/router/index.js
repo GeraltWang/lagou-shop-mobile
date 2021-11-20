@@ -128,7 +128,7 @@ router.beforeEach((to) => {
     return true;
   }
   // 校验登陆状态
-  if (!store.state.user || !window.localStorage.getItem('USERTOKEN')) {
+  if (!store.state.user.token || !window.localStorage.getItem('USERTOKEN')) {
     // 跳转登录页
     console.log('请先登录');
     console.log(to);

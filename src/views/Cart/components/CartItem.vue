@@ -2,7 +2,10 @@
   <van-swipe-cell>
     <div class="cart-item">
       <!-- 选中 -->
-      <van-checkbox checked-color="#1989fa" v-model="itemInfo.checked"></van-checkbox>
+      <van-checkbox
+        checked-color="#1989fa"
+        v-model="itemChecked"
+      />
       <!-- 右侧 -->
       <div class="link">
         <van-image
@@ -12,30 +15,72 @@
           @click.stop="router.push({ name: 'product', params: { productId: itemInfo.productId } })"
         />
         <div class="info">
-          <p class="title" v-text="itemInfo.title" @click.stop="router.push({ name: 'product', params: { productId: itemInfo.productId } })"></p>
+          <p
+            class="title"
+            v-text="itemInfo.title"
+            @click.stop="router.push({ name: 'product', params: { productId: itemInfo.productId } })"
+          />
           <div class="detail">
             <span class="price">￥{{ itemInfo.price }}</span>
-            <van-stepper v-model="value" integer :max="itemInfo.stock" button-size="0.65rem" @click.stop/>
+            <van-stepper
+              v-model="itemCount"
+              integer
+              :max="itemInfo.stock"
+              button-size="0.65rem"
+              @click.stop
+            />
           </div>
-          <p class="sku" v-text="itemInfo.sku"></p>
+          <p
+            class="sku"
+            v-text="itemInfo.sku"
+          />
         </div>
       </div>
     </div>
     <template #right>
-      <van-button square text="删除" type="danger" class="delete-button" />
+      <van-button
+        square
+        text="删除"
+        type="danger"
+        class="delete-button"
+      />
     </template>
   </van-swipe-cell>
 </template>
-<script setup>import { useRouter } from 'vue-router';
+<script setup>import { computed } from '@vue/reactivity';
+import { useRouter } from 'vue-router';
+import { useStore } from 'vuex';
 
 const { itemInfo } = defineProps({
   itemInfo: {
     type: Object,
-    required: true
-  }
-})
+    required: true,
+  },
+});
 
-const router = useRouter()
+// 通过计算属性 处理 v-model 的获取与设置操作
+const store = useStore();
+
+// 商品选中状态变化处理
+const itemChecked = computed({
+  get: () => itemInfo.checked,
+  set: (newChecked) => {
+    // 通过Vuex 进行状态更新
+    console.log(newChecked);
+    store.commit('cart/checkedChange', { checked: newChecked, id: itemInfo.id });
+  },
+});
+
+// 商品个数变化处理
+const itemCount = computed({
+  get: () => itemInfo.count,
+  set: (newCount) => {
+    console.log(newCount);
+    store.dispatch('cart/countChange', { count: newCount, id: itemInfo.id });
+  },
+});
+
+const router = useRouter();
 </script>
 <style lang="scss" scoped>
 .van-swipe-cell {
