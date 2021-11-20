@@ -293,7 +293,7 @@ const skuDetail = computed(() => productValue.value?.[sku.value]);
 // ---加购功能---
 const addToCart = async (type) => {
   // 检测登录, 未登录 跳转登录页
-  if (!store.state.user) {
+  if (!store.state.user.token) {
     router.push({ name: 'login', query: { redirect: router.currentRoute.value.fullPath } });
     return Toast({
       message: '请先登录',
