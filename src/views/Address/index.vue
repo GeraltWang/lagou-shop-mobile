@@ -64,13 +64,18 @@
   </van-form>
 </template>
 <script setup>
-import { reactive, ref } from '@vue/reactivity';
+import { reactive } from '@vue/reactivity';
 import { useRouter } from 'vue-router';
-import { getCityList } from '@/api/address'
+import { getCityList, addOrEditAddress } from '@/api/address'
 import { Toast } from 'vant';
 
 // router
 const router = useRouter();
+
+// 路由参数
+const { cartId } = defineProps({
+  cartId: String
+})
 
 // --------表单数据--------
 const addressForm = reactive({
@@ -88,6 +93,9 @@ const addressForm = reactive({
   // 地区菜单 选择后 input 展示内容
   fieldValue: ''
 })
+
+// 用于在选择地区后，整合接口需要的地区信息
+let address = {}
 
 // 显示级联菜单 并请求地区列表
 const showCascader = () => {
@@ -123,7 +131,41 @@ const convertData = data => {
 const onFinish = ({ selectedOptions }) => {
   addressForm.show = false;
   addressForm.fieldValue = selectedOptions.map((option) => option.n).join('/');
+  // 为提交接口准备数据
+  address = {
+    province: selectedOptions[0].n,
+    city: selectedOptions[1].n,
+    city_id: selectedOptions[1].v,
+    district: selectedOptions[2].n
+  }
 };
+
+// 新增/编辑 地址
+const onSubmit = async () => {
+  const { data } = await addOrEditAddress({
+    id: 0,
+    real_name: addressForm.real_name,
+    phone: addressForm.phone,
+    detail: addressForm.detail,
+    is_default: addressForm.is_default,
+    address
+  })
+  console.log(data);
+  if (data.status !== 200) {
+    return Toast.fail('服务器异常')
+  }
+  // 新增成功时检测是否要跳回订单确认页面
+  if (cartId) {
+    router.push({
+      name: 'order-confirm',
+      params: {
+        cartId
+      }
+    })
+  } else {
+    router.push('/user')
+  }
+}
 
 </script>
 <style lang="scss" scoped>
@@ -136,6 +178,8 @@ const onFinish = ({ selectedOptions }) => {
 // 表单
 .van-form {
   padding: 50px 0;
+  height: 90vh;
+  box-sizing: border-box;
   background-color: #f7f7f7;
   .van-cell-group {
     margin-top: 10px;

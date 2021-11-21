@@ -53,26 +53,20 @@ import { Toast } from 'vant';
 // router
 const router = useRouter();
 
+// 路由参数
+const { cartId } = defineProps({
+  cartId: {
+    type: String,
+    required: true
+  }
+})
+
 // 页面状态
 const state = reactive({
   popupStatus: false,
   chosenAddressId: '',
   chosenAddress: {},
-  list: [
-    {
-      id: '1',
-      name: '张三',
-      tel: '13000000000',
-      address: '浙江省杭州市西湖区文三路 138 号东方通信大厦 7 楼 501 室',
-      isDefault: true,
-    },
-    {
-      id: '2',
-      name: '李四',
-      tel: '1310000000',
-      address: '浙江省杭州市拱墅区莫干山路 50 号',
-    },
-  ],
+  list: [],
   isEmpty: computed(() => state.list.length === 0)
 })
 
@@ -82,7 +76,7 @@ const convertData = (data) => {
   return data.map(item => {
     const temp = {
       id: item.id,
-      name: item.read_name,
+      name: item.real_name,
       tel: item.phone,
       address: item.province + item.city + item.district + item.detail,
       isDefault: item.is_default
@@ -111,7 +105,7 @@ const initAddress = async (params) => {
   if (data.status !== 200) {
     return Toast.fail('服务器异常')
   }
-  // state.list = convertData(data.data)
+  state.list = convertData(data.data)
 }
 initAddress({ limit: 5, page: 1 })
 
@@ -124,7 +118,14 @@ const selectAddress = (item) => {
   state.chosenAddress = toRaw(item)
 }
 // 编辑 / 新增 地址
-const onAdd = () => Toast('新增地址');
+const onAdd = () => {
+  router.push({
+    name: 'add-address',
+    params: {
+      cartId
+    }
+  })
+}
 const onEdit = (item, index) => Toast('编辑地址:' + index);
 
 </script>

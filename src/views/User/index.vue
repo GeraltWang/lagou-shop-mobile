@@ -106,12 +106,10 @@ const goLogin = () => {
   height: 100vh;
   padding: 15px 0;
   box-sizing: border-box;
-  // background-color: #f6f7f9;
   background: radial-gradient(circle at 50% -10%, #199afb 72%, #f6f7f9 72%)
     #f6f7f9 0 -350px no-repeat;
   .header {
     display: flex;
-    // align-items: center;
     margin: 0 15px 15px;
     padding: 5px 10px;
     background-color: #fff;
@@ -127,12 +125,10 @@ const goLogin = () => {
       margin-left: 10px;
       flex: 1;
       .user-name {
-        // margin-top: 5px;
         font-size: 16px;
         font-weight: bold;
       }
       .user-id {
-        // margin-bottom: 5px;
         font-size: 12px;
         color: #747f88;
       }
