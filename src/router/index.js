@@ -21,7 +21,7 @@ const routes = [
     name: 'category',
     component: () => import('@/views/Category/index.vue'),
   },
-  // 分类页
+  // 分类页详情
   {
     path: '/category-detail/:categoryId',
     name: 'category-detail',
@@ -57,15 +57,23 @@ const routes = [
       requireAuth: true,
     },
   },
+  // 新增地址
+  {
+    path: '/add-address',
+    name: 'add-address',
+    component: () => import('@/views/Address/index.vue'),
+    props: true,
+    meta: {
+      requireAuth: true,
+    },
+  },
   // 支付
   {
     path: '/pay',
     name: 'pay',
     component: () => import('@/views/Pay/index.vue'),
+    props: true,
     meta: { requireAuth: true },
-    meta: {
-      requireAuth: true,
-    },
   },
   // 商品详情
   {

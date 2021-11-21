@@ -35,7 +35,7 @@
   <van-submit-bar
     :price="store.getters['cart/totalPrice'] * 100"
     button-text="去结算"
-    @submit="onSubmit"
+    @submit="goOrder"
   >
     <van-checkbox v-model="checkedAll">
       全选
@@ -98,6 +98,17 @@ const checkedAll = computed({
     store.commit('cart/changeAll', { checked: newStatus });
   },
 });
+
+// -------跳转订单页面-------
+const goOrder = () => {
+  // cartId 指的是要结算的所有商品的id 用逗号连接
+  router.push({
+    name: 'order-confirm',
+    params: {
+      cartId: store.getters['cart/checkedItems'].map(item => item.id).toString()
+    }
+  })
+}
 
 </script>
 
