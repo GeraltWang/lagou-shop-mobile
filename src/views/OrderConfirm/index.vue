@@ -4,7 +4,7 @@
   <!-- 主体 -->
   <div class="main">
     <!-- 地址区域 -->
-    <div class="address-card" @click="shopPopup">
+    <div class="address-card" @click="shopPopup" v-if="!state.isEmpty">
       <p class="info">
         <span class="username" v-text="state.chosenAddress.name"></span>
         <span class="tel" v-text="state.chosenAddress.tel"></span>
@@ -14,6 +14,9 @@
         <span class="tag other" v-else>其他</span>
         <span class="address" v-text="state.chosenAddress.address"></span>
       </p>
+    </div>
+    <div class="address-card empty" @click="shopPopup" v-else>
+      <p>您还没有添加过地址哦,点击此处添加</p>
     </div>
     <!-- 地址选择弹出层 -->
     <van-popup
@@ -41,14 +44,118 @@
         </template>
       </van-address-list>
     </van-popup>
+    <!-- 商品列表 -->
+    <div class="product">
+      <!-- 标题区域 -->
+      <van-cell-group>
+        <van-cell :title="state.title"></van-cell>
+      </van-cell-group>
+      <!-- 商品列表 -->
+      <van-cell-group class="product-list">
+        <van-cell class="item" v-for="item in state.cartInfo" :key="item.id">
+          <!-- 商品图 -->
+          <van-image :src="item.productInfo.image" width="2rem" height="2rem" />
+          <div class="info">
+            <p class="title" v-text="item.productInfo.store_name"></p>
+            <p class="price">￥{{ item.truePrice }}</p>
+            <p class="sku" v-text="item.productInfo.attrInfo.sku"></p>
+          </div>
+          <span class="count">x {{ item.cart_num }}</span>
+        </van-cell>
+      </van-cell-group>
+    </div>
   </div>
+  <!-- 提交订单栏 -->
+  <van-submit-bar
+    :loading="false"
+    label="订单总计："
+    :price="state.totalPrice * 100"
+    button-text="提交订单"
+    @submit="state.showPayPanel = true"
+  />
+  <!-- 付款弹出层 -->
+  <van-action-sheet
+    v-model:show="state.showPayPanel"
+    title="请选择支付方式"
+    cancel-text="取消"
+  >
+    <template #default>
+      <van-radio-group v-model="state.paymentMethod">
+        <van-cell-group>
+          <!-- 微信 -->
+          <van-cell
+            clickable
+            center
+            title="微信支付"
+            label="微信快捷支付"
+            @click="state.paymentMethod = 'wechat'"
+          >
+            <template #icon>
+              <van-icon
+                name="wechat-pay"
+                size="1rem"
+                color="#22ac38"
+                :style="{ marginRight: '12px' }"
+              />
+            </template>
+            <template #right-icon>
+              <van-radio name="wechat" />
+            </template>
+          </van-cell>
+          <!-- 支付宝 -->
+          <van-cell
+            clickable
+            center
+            title="支付宝支付"
+            label="支付宝快捷支付"
+            @click="state.paymentMethod = 'alipay'"
+          >
+            <template #icon>
+              <van-icon
+                name="alipay"
+                size="1rem"
+                color="#1989fa"
+                :style="{ marginRight: '12px' }"
+              />
+            </template>
+            <template #right-icon>
+              <van-radio name="alipay" />
+            </template>
+          </van-cell>
+          <!-- 余额 -->
+          <van-cell
+            clickable
+            center
+            title="余额支付"
+            :label="`可用余额：${state.yue}元`"
+            @click="state.paymentMethod = 'yue'"
+          >
+            <template #icon>
+              <van-icon
+                name="gold-coin"
+                size="1rem"
+                color="#f1a628"
+                :style="{ marginRight: '12px' }"
+              />
+            </template>
+            <template #right-icon>
+              <van-radio name="yue" />
+            </template>
+          </van-cell>
+          <van-cell>
+            <van-button block round type="primary" @click="goPay">去支付</van-button>
+          </van-cell>
+        </van-cell-group>
+      </van-radio-group>
+    </template>
+  </van-action-sheet>
 </template>
 
 <script setup>
 import { useRouter } from 'vue-router';
-import { getAddressList } from '@/api/order';
+import { getAddressList, confirmOrder, createOrder } from '@/api/order';
 import { computed, reactive, toRaw } from '@vue/reactivity';
-import { Toast } from 'vant';
+import { Notify, Toast } from 'vant';
 
 // router
 const router = useRouter();
@@ -63,11 +170,35 @@ const { cartId } = defineProps({
 
 // 页面状态
 const state = reactive({
+  // 地址 popup 显示状态
   popupStatus: false,
   chosenAddressId: '',
+  // 选中的地址
   chosenAddress: {},
+  // 地址列表
   list: [],
-  isEmpty: computed(() => state.list.length === 0)
+  // 地址 是否为空
+  isEmpty: computed(() => state.list.length === 0),
+  // 订单数据
+  orderData: {},
+  // 订单所含的商品
+  cartInfo: computed(() => state.orderData?.cartInfo),
+  // 订单所含的商品 种类数
+  cartItemCount: computed(() => state.cartInfo?.length || 0),
+  // 订单所含的商品 件数
+  cartItemTotalCount: computed(() =>
+    state.cartInfo?.reduce((sum, item) => sum += item.cart_num, 0) || 0
+  ),
+  // 订单所含的商品 展示文字
+  title: computed(() => `共${state.cartItemCount}种，${state.cartItemTotalCount}件 商品`),
+  // 订单总价
+  totalPrice: computed(() => state.orderData?.priceGroup?.totalPrice || 0),
+  // 付款面板显示状态
+  showPayPanel: false,
+  // 付款方式
+  paymentMethod: 'yue',
+  // 用户余额
+  yue: computed(() => state.orderData?.userInfo.now_money || 0)
 })
 
 // ------获取用户地址------
@@ -127,6 +258,36 @@ const onAdd = () => {
   })
 }
 const onEdit = (item, index) => Toast('编辑地址:' + index);
+
+// ------初始化订单数据------
+const initOrderData = async () => {
+  const { data } = await confirmOrder({
+    cartId,
+    new: 0
+  })
+  console.log(data);
+  if (data.status === 400) {
+    return Notify({ type: 'danger', message: '请返回购物车重新提交订单' })
+  }
+  state.orderData = data.data
+}
+initOrderData()
+
+// ------去支付------
+const goPay = async () => {
+  const { data } = await createOrder(state.orderData?.orderKey, {
+    addressId: state.chosenAddress.id,
+    payType: state.paymentMethod
+  })
+  console.log(data);
+  if (data.status === 200 && data.data.status === 'PAY_DEFICIENCY') {
+    return Notify({ type: 'danger', message: `余额不足${data.msg}元，请重试` })
+  }
+  if (data.status !== 200) {
+    return Notify({ type: 'danger', message: '服务器异常' })
+  }
+  Toast.success('支付成功')
+}
 
 </script>
 
@@ -188,6 +349,47 @@ const onEdit = (item, index) => Toast('编辑地址:' + index);
         -webkit-box-orient: vertical;
         -webkit-line-clamp: 1;
         overflow: hidden;
+      }
+    }
+  }
+  .address-card.empty {
+    font-size: 14px;
+    color: #6b6b6b;
+    text-align: center;
+    p {
+      line-height: 55px;
+    }
+  }
+  .product {
+    .product-list {
+      .item {
+        :deep(.van-cell__value) {
+          display: flex;
+          align-items: center;
+          .info {
+            flex: 1;
+            margin-left: 10px;
+            .title {
+              font-size: 16px;
+              display: -webkit-box;
+              -webkit-box-orient: vertical;
+              -webkit-line-clamp: 1;
+              overflow: hidden;
+            }
+            .price {
+              font-size: 14px;
+              color: #f2270c;
+            }
+            .sku {
+              font-size: 13px;
+              color: #727272;
+            }
+          }
+          .count {
+            font-size: 13px;
+            color: #727272;
+          }
+        }
       }
     }
   }
