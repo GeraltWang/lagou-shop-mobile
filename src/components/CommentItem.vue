@@ -45,6 +45,7 @@
 <script setup>
 import {
   Rate as VanRate,
+  Cell as VanCell
 } from 'vant';
 import { computed } from '@vue/reactivity';
 

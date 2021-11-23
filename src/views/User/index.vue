@@ -123,6 +123,7 @@ import {
   GridItem as VanGridItem,
   Icon as VanIcon,
   Button as VanButton,
+  Image as VanImage
 } from 'vant';
 import { computed, ref } from '@vue/reactivity';
 // import { useStore } from 'vuex';
