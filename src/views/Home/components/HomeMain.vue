@@ -63,6 +63,15 @@
   </van-pull-refresh>
 </template>
 <script setup>
+import {
+  PullRefresh as VanPullRefresh,
+  Swipe as VanSwipe,
+  SwipeItem as VanSwipeItem,
+  NoticeBar as VanNoticeBar,
+  List as VanList,
+  Grid as VanGrid,
+  GridItem as VanGridItem,
+} from 'vant';
 import { ref, computed, reactive } from 'vue';
 import ProductList from '@/components/ProductList.vue';
 import { getFirstPage } from '@/api/index.js';

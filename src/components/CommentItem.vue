@@ -43,6 +43,9 @@
   </van-cell>
 </template>
 <script setup>
+import {
+  Rate as VanRate,
+} from 'vant';
 import { computed } from '@vue/reactivity';
 
 // 接收评论数据

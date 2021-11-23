@@ -1,6 +1,10 @@
 <template>
   <!-- 顶部导航 -->
-  <van-nav-bar title="地址管理" left-arrow @click-left="router.go(-1)" />
+  <van-nav-bar
+    title="地址管理"
+    left-arrow
+    @click-left="router.go(-1)"
+  />
   <!-- 表单 -->
   <van-form @submit="onSubmit">
     <van-cell-group inset>
@@ -30,7 +34,11 @@
         @click="showCascader"
         :rules="[{ required: true, message: '请填选择地区' }]"
       />
-      <van-popup v-model:show="addressForm.show" round position="bottom">
+      <van-popup
+        v-model:show="addressForm.show"
+        round
+        position="bottom"
+      >
         <van-cascader
           v-model="addressForm.area"
           title="请选择所在地区"
@@ -52,30 +60,54 @@
       />
     </van-cell-group>
     <van-cell-group inset>
-      <van-field name="switch" label="设为默认地址" input-align="right">
+      <van-field
+        name="switch"
+        label="设为默认地址"
+        input-align="right"
+      >
         <template #input>
-          <van-switch v-model="addressForm.is_default" size="20" />
+          <van-switch
+            v-model="addressForm.is_default"
+            size="20"
+          />
         </template>
       </van-field>
     </van-cell-group>
     <div style="margin: 16px;">
-      <van-button round block type="primary" native-type="submit">提交</van-button>
+      <van-button
+        round
+        block
+        type="primary"
+        native-type="submit"
+      >
+        提交
+      </van-button>
     </div>
   </van-form>
 </template>
 <script setup>
 import { reactive } from '@vue/reactivity';
 import { useRouter } from 'vue-router';
-import { getCityList, addOrEditAddress } from '@/api/address'
-import { Toast } from 'vant';
+import {
+  Toast,
+  Form as VanForm,
+  CellGroup as VanCellGroup,
+  Field as VanField,
+  Switch as VanSwitch,
+  Button as VanButton,
+  NavBar as VanNavBar,
+  Popup as VanPopup,
+  Cascader as VanCascader,
+} from 'vant';
+import { getCityList, addOrEditAddress } from '@/api/address';
 
 // router
 const router = useRouter();
 
 // 路由参数
 const { cartId } = defineProps({
-  cartId: String
-})
+  cartId: String,
+});
 
 // --------表单数据--------
 const addressForm = reactive({
@@ -91,41 +123,41 @@ const addressForm = reactive({
   // 地区菜单选项
   options: [],
   // 地区菜单 选择后 input 展示内容
-  fieldValue: ''
-})
+  fieldValue: '',
+});
 
 // 用于在选择地区后，整合接口需要的地区信息
-let address = {}
+let address = {};
 
 // 显示级联菜单 并请求地区列表
 const showCascader = () => {
-  addressForm.show = true
-  initCityList()
-}
+  addressForm.show = true;
+  initCityList();
+};
 
 // 请求级联菜单列表
 const initCityList = async () => {
-  const { data } = await getCityList()
+  const { data } = await getCityList();
   if (data.status !== 200) {
-    return Toast.fail('服务器异常')
+    return Toast.fail('服务器异常');
   }
-  addressForm.options = convertData(data.data)
-}
-initCityList()
+  addressForm.options = convertData(data.data);
+};
+initCityList();
 
 // 地区选项处理 去除空的children
-const convertData = data => {
-  data.forEach(item => {
+const convertData = (data) => {
+  data.forEach((item) => {
     // 说明是去
     if (item.c.length === 0) {
-      delete item.c
+      delete item.c;
     } else {
       // 说明是省或者市 递归处理
-      convertData(item.c)
+      convertData(item.c);
     }
   });
-  return data
-}
+  return data;
+};
 
 // 级联菜单 全部选项选择完毕后，会触发 finish 事件
 const onFinish = ({ selectedOptions }) => {
@@ -136,8 +168,8 @@ const onFinish = ({ selectedOptions }) => {
     province: selectedOptions[0].n,
     city: selectedOptions[1].n,
     city_id: selectedOptions[1].v,
-    district: selectedOptions[2].n
-  }
+    district: selectedOptions[2].n,
+  };
 };
 
 // 新增/编辑 地址
@@ -148,24 +180,24 @@ const onSubmit = async () => {
     phone: addressForm.phone,
     detail: addressForm.detail,
     is_default: addressForm.is_default,
-    address
-  })
+    address,
+  });
   console.log(data);
   if (data.status !== 200) {
-    return Toast.fail('服务器异常')
+    return Toast.fail('服务器异常');
   }
   // 新增成功时检测是否要跳回订单确认页面
   if (cartId) {
     router.push({
       name: 'order-confirm',
       params: {
-        cartId
-      }
-    })
+        cartId,
+      },
+    });
   } else {
-    router.push('/user')
+    router.push('/user');
   }
-}
+};
 
 </script>
 <style lang="scss" scoped>

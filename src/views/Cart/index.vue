@@ -46,6 +46,13 @@
 </template>
 
 <script setup>
+import {
+  NavBar as VanNavBar,
+  Empty as VanEmpty,
+  Button as VanButton,
+  SubmitBar as VanSubmitBar,
+  Checkbox as VanCheckbox,
+} from 'vant';
 import { computed } from '@vue/reactivity';
 import { useStore } from 'vuex';
 import { nextTick } from '@vue/runtime-core';
@@ -105,10 +112,10 @@ const goOrder = () => {
   router.push({
     name: 'order-confirm',
     params: {
-      cartId: store.getters['cart/checkedItems'].map(item => item.id).toString()
-    }
-  })
-}
+      cartId: store.getters['cart/checkedItems'].map((item) => item.id).toString(),
+    },
+  });
+};
 
 </script>
 

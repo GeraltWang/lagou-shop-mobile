@@ -32,6 +32,12 @@
   </div>
 </template>
 <script setup>
+import {
+  Grid as VanGrid,
+  GridItem as VanGridItem,
+  Image as VanImage,
+} from 'vant';
+
 // 接收商品数据
 const { productsData } = defineProps({
   productsData: {

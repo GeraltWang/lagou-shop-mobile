@@ -198,7 +198,24 @@
 
 <script setup>
 import { computed, ref, reactive } from '@vue/reactivity';
-import { Toast } from 'vant';
+import {
+  Toast,
+  Cell as VanCell,
+  CellGroup as VanCellGroup,
+  Icon as VanIcon,
+  Popup as VanPopup,
+  NavBar as VanNavBar,
+  ActionBar as VanActionBar,
+  ActionBarButton as VanActionBarButton,
+  ActionBarIcon as VanActionBarIcon,
+  Tab as VanTab,
+  Grid as VanGrid,
+  GridItem as VanGridItem,
+  Image as VanImage,
+  Swipe as VanSwipe,
+  SwipeItem as VanSwipeItem,
+  Tabs as VanTabs,
+} from 'vant';
 import { useRouter, onBeforeRouteUpdate } from 'vue-router';
 import { useStore } from 'vuex';
 import { getProductDetail } from '@/api/product.js';

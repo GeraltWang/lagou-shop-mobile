@@ -48,6 +48,13 @@
   </van-swipe-cell>
 </template>
 <script setup>import { computed } from '@vue/reactivity';
+import {
+  SwipeCell as VanSwipeCell,
+  Checkbox as VanCheckbox,
+  Image as VanImage,
+  Stepper as VanStepper,
+  Button as VanButton,
+} from 'vant';
 import { useRouter } from 'vue-router';
 import { useStore } from 'vuex';
 

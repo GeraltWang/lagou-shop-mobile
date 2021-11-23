@@ -33,7 +33,10 @@
   </van-tabbar>
 </template>
 <script setup>
-
+import {
+  Tabbar as VanTabbar,
+  TabbarItem as VanTabbarItem,
+} from 'vant';
 </script>
 <style lang="scss" scoped>
 // 增加 fixed 样式的权重

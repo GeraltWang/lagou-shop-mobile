@@ -1,4 +1,6 @@
 <template>
   <!-- 根路由出口 -->
-  <router-view />
+  <vue-page-stack>
+    <router-view></router-view>
+  </vue-page-stack>
 </template>

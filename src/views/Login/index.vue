@@ -89,7 +89,13 @@
 <script setup>
 import { computed, reactive } from '@vue/reactivity';
 import { useCountDown } from '@vant/use';
-import { Toast } from 'vant';
+import {
+  Toast,
+  Form as VanForm,
+  CellGroup as VanCellGroup,
+  Field as VanField,
+  Button as VanButton,
+} from 'vant';
 import { useStore } from 'vuex';
 import { useRoute, useRouter } from 'vue-router';
 import {

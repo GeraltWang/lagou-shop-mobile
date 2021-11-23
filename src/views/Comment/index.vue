@@ -68,6 +68,12 @@
 </template>
 
 <script setup>
+import {
+  CellGroup as VanCellGroup,
+  Empty as VanEmpty,
+  Button as VanButton,
+  Cell as VanCell,
+} from 'vant';
 import { computed, reactive, ref } from '@vue/reactivity';
 import CommentItem from '@/components/CommentItem.vue';
 import { getProductReply, getReplyByType } from '@/api/product.js';
