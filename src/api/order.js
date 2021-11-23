@@ -20,3 +20,8 @@ export const createOrder = (orderKey, data) => request({
   url: `/order/create/${orderKey}`,
   data,
 });
+
+export const getOrderList = () => request({
+  method: 'GET',
+  url: '/order/list'
+})

@@ -5,6 +5,7 @@
     @click-left="router.go(-1)"
   />
   <van-tabs
+    v-model:active="active"
     scrollspy
     color="#fbc546"
   >
@@ -167,7 +168,7 @@
       />
     </van-tab>
   </van-tabs>
-  <!-- 架构栏 -->
+  <!-- 加购栏 -->
   <van-action-bar>
     <van-action-bar-icon
       icon="chat-o"
@@ -215,6 +216,7 @@ import {
   Swipe as VanSwipe,
   SwipeItem as VanSwipeItem,
   Tabs as VanTabs,
+  Stepper as VanStepper
 } from 'vant';
 import { useRouter, onBeforeRouteUpdate } from 'vue-router';
 import { useStore } from 'vuex';
@@ -236,16 +238,7 @@ const router = useRouter();
 // Vuex
 const store = useStore();
 
-// 跳转推荐商品 通过导航守卫监听路由变化 请求新的商品数据
-onBeforeRouteUpdate((to) => {
-  // 清除旧数据
-  productDetail.value = {};
-  // 回到顶部
-  document.body.scrollTop = 0;
-  document.documentElement.scrollTop = 0;
-  // 重新请求数据
-  initProductDetail(to.params.productId);
-});
+const active = ref(0);
 
 // 请求商品详情
 const productDetail = ref({});
@@ -259,18 +252,18 @@ const initProductDetail = async (productId) => {
   }
   productDetail.value = data.data;
   // 初始化规格默认选择
-  initSpec(data.data.productAttr);
+  initSpec(data.data?.productAttr);
 };
 initProductDetail(productId);
 
 // ---商品数据处理---
 // 商品详细信息
-const storeInfo = computed(() => productDetail.value.storeInfo);
+const storeInfo = computed(() => productDetail.value?.storeInfo);
 // 1 轮播图
 const swipeImage = computed(() => storeInfo.value?.slider_image);
 // 2 评价信息
 // 评价个数
-const replyCount = computed(() => productDetail.value.replyCount || 0);
+const replyCount = computed(() => productDetail.value?.replyCount || 0);
 const replyCountShow = computed(() => `用户评价(${replyCount.value})`);
 // 好评率
 const replyChance = computed(() => productDetail.value.replyChance || 100);
@@ -282,12 +275,12 @@ const goodsList = computed(() => productDetail.value.good_list);
 
 // sku弹出层处理
 // 1. 规格数据处理
-const productAttr = computed(() => productDetail.value.productAttr);
-const productValue = computed(() => productDetail.value.productValue);
+const productAttr = computed(() => productDetail.value?.productAttr);
+const productValue = computed(() => productDetail.value?.productValue);
 const skuState = reactive({
   show: false,
   spec: [], // sku选中
-  quantities: 0, // 购买个数
+  quantities: 1, // 购买个数
 });
 
 // 显示隐藏弹出层
@@ -324,7 +317,7 @@ const addToCart = async (type) => {
   // 发送请求，将数据加入购物车
   const { data } = await addCart({
     new: type,
-    uniqueId: skuDetail.value.unique,
+    uniqueId: skuDetail.value?.unique,
     productId,
     cartNum: skuState.quantities,
   });
@@ -335,6 +328,18 @@ const addToCart = async (type) => {
   skuState.show = false;
   Toast.success('加入购物车成功');
 };
+
+// 跳转推荐商品 通过导航守卫监听路由变化 请求新的商品数据
+onBeforeRouteUpdate((to) => {
+  // 清除旧数据
+  productDetail.value = {};
+  skuState.quantities = 1;
+  // 回到顶部
+  document.body.scrollTop = 0;
+  document.documentElement.scrollTop = 0;
+  // 重新请求数据
+  initProductDetail(to.params.productId);
+});
 </script>
 
 <style lang="scss" scoped>

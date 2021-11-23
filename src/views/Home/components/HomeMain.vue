@@ -4,7 +4,6 @@
     v-model="refreshing"
     @refresh="onRefresh"
   >
-    <!-- <div class="home-main"> -->
     <!-- 轮播图 -->
     <van-swipe
       class="my-swipe"
@@ -13,15 +12,15 @@
       lazy-render
     >
       <van-swipe-item
-        v-for="img in swipeData"
-        :key="img.img"
+        v-for="(item, index) in swipeData"
+        :key="index"
       >
-        <img :src="img.img">
+        <img :src="item.img">
       </van-swipe-item>
     </van-swipe>
     <!-- 宫格 -->
     <van-grid
-      icon-size="35px"
+      icon-size="1rem"
       clickable
     >
       <van-grid-item
@@ -55,11 +54,10 @@
       v-model:loading="state.loading"
       :finished="state.finished"
       finished-text="没有更多了"
-      @load="initProductData"
+      @load="initProductsData"
     >
       <product-list :products-data="productsData" />
     </van-list>
-    <!-- </div> -->
   </van-pull-refresh>
 </template>
 <script setup>
@@ -74,8 +72,8 @@ import {
 } from 'vant';
 import { ref, computed, reactive } from 'vue';
 import ProductList from '@/components/ProductList.vue';
-import { getFirstPage } from '@/api/index.js';
-import { getProductList } from '@/api/product.js';
+import { getFirstPage } from '@/api/index';
+import { getProductList } from '@/api/product';
 
 // ---首页功能---
 // 响应式数据，存储首页所有数据
@@ -112,15 +110,14 @@ const state = reactive({
 // 页数
 let page = 1;
 // 加载条数
-const limit = 6;
+let limit = 4;
 // 产品内容请求
-const initProductData = async () => {
+const initProductsData = async () => {
   console.log('触发产品刷新');
   const { data } = await getProductList({
-    page,
     limit,
+    page,
   });
-  console.log(data);
   if (data.status !== 200) {
     return;
   }
@@ -132,19 +129,19 @@ const initProductData = async () => {
   if (data.data.length < limit) {
     state.finished = true;
     return;
+  } else {
+    state.finished = false;
   }
   // 变更页数，准备下次数据请求
   page += 1;
-  console.log(page);
 };
 // List组件可见时，会自动触发加载，所以无需手动调用请求方法
-// initProductData()
+// initProductsData()
 
 // ---下拉刷新----
 const refreshing = ref(false);
 
 const onRefresh = () => {
-  console.log('触发下拉刷新');
   // 1.清空数据
   indexData.value = {};
   productsData.value = [];
@@ -152,10 +149,10 @@ const onRefresh = () => {
   page = 1;
   // 3.触底加载状态还原
   state.loading = false;
-  state.finished = false;
+  state.finished = true;
   // 4.重新发送请求
   initIndexData();
-  // initProductData();
+  initProductsData();
 };
 </script>
 <style lang="scss" scoped>

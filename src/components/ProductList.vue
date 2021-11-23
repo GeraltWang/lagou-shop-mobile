@@ -1,7 +1,7 @@
 <template>
-  <div class="product-list">
     <!-- 内容不居中，关闭边框 -->
     <van-grid
+      class="product-list"
       :column-num="2"
       :gutter="15"
       :center="false"
@@ -13,7 +13,7 @@
         :to="{ name: 'product', params: { productId: item.id } }"
       >
         <!-- 商品图 -->
-        <van-image :src="item.image" />
+        <van-image :src="item.image"/>
         <!-- 商品标题 -->
         <p
           class="title"
@@ -29,7 +29,6 @@
         </p>
       </van-grid-item>
     </van-grid>
-  </div>
 </template>
 <script setup>
 import {
@@ -53,6 +52,7 @@ const { productsData } = defineProps({
     padding: 0;
     border-radius: 10px;
     overflow: hidden;
+    margin-bottom: 10px;
   }
   .title {
     font-size: 14px;

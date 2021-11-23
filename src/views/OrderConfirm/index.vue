@@ -222,6 +222,7 @@ import {
   AddressList as VanAddressList,
   Empty as VanEmpty,
   SubmitBar as VanSubmitBar,
+  Image as VanImage
 } from 'vant';
 import { getAddressList, confirmOrder, createOrder } from '@/api/order';
 
@@ -362,6 +363,7 @@ const goPay = async () => {
 }
 .main {
   padding: 50px 0;
+  // 顶部地址框
   .address-card {
     position: relative;
     min-height: 85px;
@@ -416,6 +418,7 @@ const goPay = async () => {
       }
     }
   }
+  // 地址框无地址
   .address-card.empty {
     font-size: 14px;
     color: #6b6b6b;
@@ -424,6 +427,15 @@ const goPay = async () => {
       line-height: 55px;
     }
   }
+  // 地址 popup
+  :deep(.van-popup) {
+    .van-address-list {
+      .van-radio-group {
+        padding-bottom: 50px;
+      }
+    }
+  }
+
   .product {
     .product-list {
       .item {

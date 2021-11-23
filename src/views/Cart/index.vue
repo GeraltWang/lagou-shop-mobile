@@ -128,8 +128,9 @@ const goOrder = () => {
 }
 // 主体
 .cart-list {
-  height: calc(100vh - 50px);
-  margin: 46px 0 100px;
+  // min-height: 1000px;
+  height: 100vh;
+  margin: 46px 0 110px;
   padding-top: 10px;
   box-sizing: border-box;
   background-color: #f2f2f2;
