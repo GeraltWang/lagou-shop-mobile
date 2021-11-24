@@ -76,7 +76,7 @@
           </van-grid>
         </van-cell>
       </van-cell-group>
-      <van-cell-group inset>
+      <van-cell-group inset class="order-block">
         <van-cell
           title="订单中心"
           value="查看全部"
@@ -87,26 +87,41 @@
           :border="false"
           column-num="5"
         >
-          <van-grid-item
-            icon="bill-o"
-            text="待付款"
-          />
-          <van-grid-item
-            icon="tosend"
-            text="待发货"
-          />
-          <van-grid-item
-            icon="logistics"
-            text="待收货"
-          />
-          <van-grid-item
-            icon="comment-o"
-            text="待评价"
-          />
-          <van-grid-item
-            icon="sign"
-            text="已完成"
-          />
+          <van-badge :content="unpayList" max="9" :show-zero="false">
+            <van-grid-item
+              icon="bill-o"
+              text="待付款"
+              :to="{ name: 'order', params: { type: 'unpay' }}"
+            />
+          </van-badge>
+          <van-badge :content="undeliveredList" max="9" :show-zero="false">
+            <van-grid-item
+              icon="tosend"
+              text="待发货"
+              :to="{ name: 'order', params: { type: 'undel' }}"
+            />
+          </van-badge>
+          <van-badge :content="unconfirmedList" max="9" :show-zero="false">
+            <van-grid-item
+              icon="logistics"
+              text="待收货"
+              :to="{ name: 'order', params: { type: 'unconf' }}"
+            />
+          </van-badge>
+          <van-badge :content="commentList" max="9" :show-zero="false">
+            <van-grid-item
+              icon="comment-o"
+              text="待评价"
+              :to="{ name: 'order', params: { type: 'comm' }}"
+            />
+          </van-badge>
+          <van-badge :content="completedList" max="9" :show-zero="false">
+            <van-grid-item
+              icon="sign"
+              text="已完成"
+              :to="{ name: 'order', params: { type: 'comp' }}"
+            />
+          </van-badge>
         </van-grid>
       </van-cell-group>
     </div>
@@ -123,13 +138,15 @@ import {
   GridItem as VanGridItem,
   Icon as VanIcon,
   Button as VanButton,
-  Image as VanImage
+  Image as VanImage,
+  Badge as VanBadge
 } from 'vant';
 import { computed, ref } from '@vue/reactivity';
 // import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
 import TabBar from '@/components/TabBar.vue';
-import { getUserInfo } from '@/api/user.js';
+import { getUserInfo } from '@/api/user';
+import { getOrderList } from '@/api/order';
 
 // VUEX
 // const store = useStore();
@@ -164,6 +181,28 @@ const initUser = async () => {
   isLogin.value = true;
 };
 initUser();
+
+// 获取订单信息
+const orderList = ref([])
+const unpayList = computed(() => orderList.value.filter(item => item._status._type === 0).length || 0)
+const undeliveredList = computed(() => orderList.value.filter(item => item._status._type === 1).length || 0)
+const unconfirmedList = computed(() => orderList.value.filter(item => item._status._type === 2).length || 0)
+const commentList = computed(() => orderList.value.filter(item => item._status._type === 3).length || 0)
+const completedList = computed(() => orderList.value.filter(item => item._status._type === 4).length || 0)
+
+const initOrderInfo = async () => {
+  const { data } = await getOrderList()
+  console.log(data);
+  if (data.status === 400) {
+    return Toast.fail('服务器异常');
+  }
+  if (data.status === 410000) {
+    isLogin.value = false;
+    return;
+  }
+  orderList.value = data.data
+}
+initOrderInfo()
 
 // 去登陆
 const goLogin = () => {
@@ -220,6 +259,18 @@ const goLogin = () => {
       .van-cell {
         padding: 0;
         min-height: 74px;
+      }
+    }
+    .order-block {
+      .van-grid {
+        :deep(.van-badge__wrapper) {
+          flex: 1;
+          .van-badge {
+            z-index: 100;
+            right: 20px;
+            top: 15px;
+          }
+        }
       }
     }
   }

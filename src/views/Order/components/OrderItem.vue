@@ -56,7 +56,6 @@ const itemCount = computed(() => orderInfo.cartInfo.reduce((sum, item) => sum +=
     margin-bottom: 5px;
     .img-box {
       flex: 1;
-      // width: 90%;
       display: flex;
       overflow-y: hidden;
       overflow-x: auto;

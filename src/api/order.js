@@ -21,6 +21,7 @@ export const createOrder = (orderKey, data) => request({
   data,
 });
 
+// 获取所有订单
 export const getOrderList = () => request({
   method: 'GET',
   url: '/order/list'

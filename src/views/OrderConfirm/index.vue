@@ -346,12 +346,16 @@ const goPay = async () => {
   });
   console.log(data);
   if (data.status === 200 && data.data.status === 'PAY_DEFICIENCY') {
+    state.showPayPanel = false
     return Notify({ type: 'danger', message: `余额不足${data.msg}元，请重试` });
   }
   if (data.status !== 200) {
+    state.showPayPanel = false
     return Notify({ type: 'danger', message: '服务器异常' });
   }
   Toast.success('支付成功');
+  state.showPayPanel = false
+  router.push({ name: 'pay', params: { msg: '支付成功' } })
 };
 
 </script>
